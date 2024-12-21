@@ -18,7 +18,7 @@ import (
 
 // A DHKey is a keypair used for Diffie-Hellman key agreement.
 type DHKey struct {
-	Private []byte
+	Private interface{}
 	Public  []byte
 }
 
@@ -30,7 +30,7 @@ type DHFunc interface {
 
 	// DH performs a Diffie-Hellman calculation between the provided private and
 	// public keys and returns the result.
-	DH(privkey, pubkey []byte) ([]byte, error)
+	DH(privkey interface{}, pubkey []byte) ([]byte, error)
 
 	// DHLen is the number of bytes returned by DH.
 	DHLen() int
@@ -119,8 +119,8 @@ func (dh25519) GenerateKeypair(rng io.Reader) (DHKey, error) {
 	return DHKey{Private: privkey, Public: pubkey}, nil
 }
 
-func (dh25519) DH(privkey, pubkey []byte) ([]byte, error) {
-	return curve25519.X25519(privkey, pubkey)
+func (dh25519) DH(privkey interface{}, pubkey []byte) ([]byte, error) {
+	return curve25519.X25519(privkey.([]byte), pubkey)
 }
 
 func (dh25519) DHLen() int     { return 32 }
